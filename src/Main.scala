@@ -33,6 +33,12 @@ object Main {
 
     val outputPath = "/Users/dragonk/Library/CloudStorage/OneDrive-个人/NJU workspace/Grade3_1/FBDP/实验/lab4/mac-spark/output/task1_1"
     formattedCounts.saveAsTextFile(outputPath)
+    try Thread.sleep(100000)
+    catch {
+      case e: InterruptedException =>
+        throw new RuntimeException(e)
+    }
+    sc.stop()
   }
 
   def task1_2(): Unit = {
@@ -60,6 +66,11 @@ object Main {
     // 保存到指定路径的文件中
     sc.parallelize(top10).saveAsTextFile("/Users/dragonk/Library/CloudStorage/OneDrive-个人/NJU workspace/Grade3_1/FBDP/实验/lab4/mac-spark/output/task1_2/top10")
     sc.parallelize(bottom10).saveAsTextFile("/Users/dragonk/Library/CloudStorage/OneDrive-个人/NJU workspace/Grade3_1/FBDP/实验/lab4/mac-spark/output/task1_2/bottom10")
+    try Thread.sleep(100000)
+    catch {
+      case e: InterruptedException =>
+        throw new RuntimeException(e)
+    }
     sc.stop()
   }
   def task2_1(): Unit = {
@@ -79,6 +90,12 @@ object Main {
     val res=sortedCounts.filter{case (k,v)=>k!=0}.map{case (k,v)=>(k,v.toDouble/maleNum)}
     val outputPath = "/Users/dragonk/Library/CloudStorage/OneDrive-个人/NJU workspace/Grade3_1/FBDP/实验/lab4/mac-spark/output/task2_1"
     res.saveAsTextFile(outputPath)
+    try Thread.sleep(100000)
+    catch {
+      case e: InterruptedException =>
+        throw new RuntimeException(e)
+    }
+    sc.stop()
   }
   def task2_2(): Unit = {
     val spark=SparkSession.builder().appName("Spark Pi").master("local").getOrCreate()
@@ -100,6 +117,12 @@ object Main {
     //保存为csv
     val outputPath = "/Users/dragonk/Library/CloudStorage/OneDrive-个人/NJU workspace/Grade3_1/FBDP/实验/lab4/mac-spark/output/task2_2"
     df.write.option("header", "true").csv(outputPath)
+    try Thread.sleep(100000)
+    catch {
+      case e: InterruptedException =>
+        throw new RuntimeException(e)
+    }
+    sc.stop()
   }
   def task3():Unit={
     import org.apache.spark.ml.classification.LogisticRegression
@@ -114,7 +137,6 @@ object Main {
     val data = spark.read.format("csv").option("header", "true").option("inferSchema", "true").load(inputPath)
     // 获取你的特征列名
     val featureColumns = data.columns.filter(_ != "TARGET")
-    print(featureColumns.mkString("Array(", ", ", ")"))
     // 创建向量装配器
     val assembler = new VectorAssembler()
       .setInputCols(featureColumns)
@@ -158,5 +180,14 @@ object Main {
     // 计算测试数据的准确率
     val accuracy3 = evaluator.evaluate(predictions3)
     println(s"Test Accuracy = $accuracy3")
+    val outputPath = "/Users/dragonk/Library/CloudStorage/OneDrive-个人/NJU workspace/Grade3_1/FBDP/实验/lab4/mac-spark/output/task3"
+    val res=spark.sparkContext.parallelize(Seq(("Logistic Regression",accuracy),("Decision Tree",accuracy2),("Random Forest",accuracy3)))
+    res.saveAsTextFile(outputPath)
+    try Thread.sleep(100000)
+    catch {
+      case e: InterruptedException =>
+        throw new RuntimeException(e)
+    }
+    spark.stop()
   }
 }
